@@ -6,10 +6,10 @@ using UnityEngine.UI;
 
 public class MainManager : MonoBehaviour
 {
+    public MainManager Instance;
+
     public Brick BrickPrefab;
     public int LineCount = 6;
-    public Rigidbody Ball;
-
     public Text ScoreText;
     public GameObject GameOverText;
     
@@ -18,14 +18,31 @@ public class MainManager : MonoBehaviour
     
     private bool m_GameOver = false;
 
-    
+    //cached references
+    Rigidbody ball;
+
+    private void Awake()
+    {
+        if(Instance != null)
+        {
+            Destroy(gameObject);
+            return;
+        }
+
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
+        Debug.Log("Run");
+        Findball();
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
-        
-        int[] pointCountArray = new [] {1,1,2,2,5,5};
+
+        int[] pointCountArray = new[] { 1, 1, 2, 2, 5, 5 };
         for (int i = 0; i < LineCount; ++i)
         {
             for (int x = 0; x < perLine; ++x)
@@ -35,6 +52,17 @@ public class MainManager : MonoBehaviour
                 brick.PointValue = pointCountArray[i];
                 brick.onDestroyed.AddListener(AddPoint);
             }
+        }
+        
+    }
+
+    private void Findball()
+    {
+        Ball myBall = FindAnyObjectByType<Ball>();
+
+        if(myBall != null)
+        {
+            ball = myBall.GetComponent<Rigidbody>();
         }
     }
 
@@ -49,8 +77,8 @@ public class MainManager : MonoBehaviour
                 Vector3 forceDir = new Vector3(randomDirection, 1, 0);
                 forceDir.Normalize();
 
-                Ball.transform.SetParent(null);
-                Ball.AddForce(forceDir * 2.0f, ForceMode.VelocityChange);
+                ball.transform.SetParent(null);
+                ball.AddForce(forceDir * 2.0f, ForceMode.VelocityChange);
             }
         }
         else if (m_GameOver)
@@ -60,6 +88,8 @@ public class MainManager : MonoBehaviour
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
             }
         }
+        
+
     }
 
     void AddPoint(int point)
@@ -72,5 +102,11 @@ public class MainManager : MonoBehaviour
     {
         m_GameOver = true;
         GameOverText.SetActive(true);
+    }
+
+    class HighScore 
+    {
+        string name;
+        int score;
     }
 }
