@@ -109,38 +109,59 @@ public class MainManager : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            GetName();
-        }
+        if (Input.GetKeyDown(KeyCode.Return) && onMenu) GetName();
 
         if (onMenu) return;
 
         if (!m_Started)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                m_Started = true;
-                float randomDirection = Random.Range(-1.0f, 1.0f);
-                Vector3 forceDir = new Vector3(randomDirection, 1, 0);
-                forceDir.Normalize();
-
-                ball.transform.SetParent(null);
-                ball.AddForce(forceDir * 2.0f, ForceMode.VelocityChange);
-            }
+            LaunchBall();
         }
         else if (m_GameOver)
         {
-            if (Input.GetKeyDown(KeyCode.Space))
+            ResetAfterGameOver();
+        }
+
+        Cheat();
+    }
+
+    private void Cheat()
+    {
+        if (Input.GetKeyDown(KeyCode.BackQuote))
+        {
+            foreach(Brick brick in FindObjectsOfType<Brick>())
             {
-                SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-                m_GameOver = false;
-                m_Points = 0;
-                m_Started = false;
-                LineCount = 2;
+                brick.KillBlock();
             }
         }
     }
+
+    private void ResetAfterGameOver()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            m_GameOver = false;
+            m_Points = 0;
+            m_Started = false;
+            LineCount = 2;
+        }
+    }
+
+    private void LaunchBall()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            m_Started = true;
+            float randomDirection = Random.Range(-1.0f, 1.0f);
+            Vector3 forceDir = new Vector3(randomDirection, 1, 0);
+            forceDir.Normalize();
+
+            ball.transform.SetParent(null);
+            ball.AddForce(forceDir * 2.0f, ForceMode.VelocityChange);
+        }
+    }
+
     private void GetName()
     {
         PlayerName = nameInput.text;
@@ -185,8 +206,6 @@ public class MainManager : MonoBehaviour
         {
             string json = File.ReadAllText(path);
             HighScore data = JsonUtility.FromJson<HighScore>(json);
-
-            Debug.Log(json);
 
             highScore.name = data.name;
             highScore.score = data.score;
