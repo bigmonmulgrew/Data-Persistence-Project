@@ -15,6 +15,7 @@ public class DeathZone : MonoBehaviour
     private void OnCollisionEnter(Collision other)
     {
         Destroy(other.gameObject);
-        Manager.GameOver();
+        if (FindObjectsOfType<Brick>().Length == 0) Manager.ContinuePlay();
+        else                                        Manager.GameOver();
     }
 }

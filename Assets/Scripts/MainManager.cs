@@ -48,8 +48,6 @@ public class MainManager : MonoBehaviour
         }
 
     }
-
-
     public  void StartGame()
     {
         if (SceneManager.GetActiveScene().buildIndex == 0) onMenu = true;
@@ -70,7 +68,6 @@ public class MainManager : MonoBehaviour
 
         bestScoreText.text = $"Best Score : {highScore.name} : {highScore.score}";
     }
-
     private void FindUI()
     {
         scoreText = GameObject.Find("ScoreText").GetComponent<Text>();
@@ -80,7 +77,6 @@ public class MainManager : MonoBehaviour
         bestScoreText = GameObject.Find("BestScoreText").GetComponent<Text>();
         bestScoreText.text = $"Best Score : {highScore.name} : {highScore.score}";
     }
-
     private void FindNameInput()
     {
         nameInput = FindObjectOfType<TMP_InputField>();
@@ -90,7 +86,7 @@ public class MainManager : MonoBehaviour
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
 
-        int[] pointCountArray = new[] { 1, 1, 2, 2, 5, 5 };
+        int[] pointCountArray = new[] { 1, 1, 2, 2, 5, 5 , 7, 7, 9, 9, 11, 11, 15, 15 };
         for (int i = 0; i < LineCount; ++i)
         {
             for (int x = 0; x < perLine; ++x)
@@ -102,7 +98,6 @@ public class MainManager : MonoBehaviour
             }
         }
     }
-
     private void Findball()
     {
         Ball myBall = FindAnyObjectByType<Ball>();
@@ -142,6 +137,7 @@ public class MainManager : MonoBehaviour
                 m_GameOver = false;
                 m_Points = 0;
                 m_Started = false;
+                LineCount = 2;
             }
         }
     }
@@ -164,6 +160,13 @@ public class MainManager : MonoBehaviour
         gameOverText.SetActive(true);
         SaveHighScore();
     }
+    public void ContinuePlay()
+    {
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        m_Started = false;
+        LineCount = Mathf.Clamp(LineCount + 1, LineCount, 9);
+        Time.timeScale += 0.1f;
+    }
     void SaveHighScore()
     {
         HighScore data = new HighScore();
@@ -173,10 +176,7 @@ public class MainManager : MonoBehaviour
         string json = JsonUtility.ToJson(data);
 
         File.WriteAllText(Application.persistentDataPath + "/highScore.json", json);
-        Debug.Log(json);
-        Debug.Log(Application.persistentDataPath);
     }
-
     void LoadHighScore()
     {
 
@@ -193,7 +193,6 @@ public class MainManager : MonoBehaviour
         }
 
     }
-
     void CompareHighScore()
     {
         if(m_Points > highScore.score)
@@ -203,7 +202,6 @@ public class MainManager : MonoBehaviour
             bestScoreText.text = $"Best Score : {highScore.name} : {highScore.score}";
         }
     }
-
     [System.Serializable]
     class HighScore
     {
