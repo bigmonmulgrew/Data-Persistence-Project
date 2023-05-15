@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -17,17 +16,24 @@ public class Brick : MonoBehaviour
         MaterialPropertyBlock block = new MaterialPropertyBlock();
         switch (PointValue)
         {
-            case 1 :
+            case int i when          i <= 10:
                 block.SetColor("_BaseColor", Color.green);
                 break;
-            case 2:
+            case int i when i > 10  && i <= 12:
                 block.SetColor("_BaseColor", Color.yellow);
                 break;
-            case 5:
+            case int i when i > 12 && i <= 14:
                 block.SetColor("_BaseColor", Color.blue);
                 break;
-            default:
+            case int i when i > 14 && i <= 17:
                 block.SetColor("_BaseColor", Color.red);
+                break;
+            default:
+                block.SetColor("_BaseColor", new Color(
+                                                Random.Range(0f, 1f),
+                                                Random.Range(0f, 1f),
+                                                Random.Range(0f, 1f)
+                                                ));
                 break;
         }
         renderer.SetPropertyBlock(block);
